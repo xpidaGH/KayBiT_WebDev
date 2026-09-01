@@ -1,0 +1,6 @@
+{
+  "name": "Web Development Archetypes & Template Laboratory",
+  "description": "Comprehensive interactive teaching templates and architectural blueprints for 11 essential website and web application archetypes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
