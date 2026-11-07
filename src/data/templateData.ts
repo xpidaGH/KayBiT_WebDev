@@ -39,6 +39,7 @@ export const TEMPLATE_METADATA: Record<TemplateId, TeachingMetadata> = {
       { level: 'Core Challenge', title: 'Live Client-Side Tag Filter', prompt: 'Sync active categories with browser URL search parameters without triggering a full page re-render.' },
       { level: 'Advanced / Capstone', title: 'MDX Custom Component Embedder', prompt: 'Build a dynamic MDX renderer that replaces specific markdown code blocks with interactive React mini-widgets.' }
     ],
+    tags: ['SSG', 'Markdown', 'SEO', 'RSS', 'Content'],
     codeSnippet: `// Next.js / React Example: Content Blog Engine with Tag Filter & Reading Time
 import React, { useState, useMemo } from 'react';
 
@@ -148,6 +149,7 @@ export function BlogSite({ articles }: { articles: Article[] }) {
       { level: 'Core Challenge', title: 'Faceted Multi-Filter System', prompt: 'Build category and price range filters that apply combined boolean filtering to product cards in real time.' },
       { level: 'Advanced / Capstone', title: 'Atomic Cart Lock Simulation', prompt: 'Design a mock API endpoint with optimistic locking that decrements stock and throws an out-of-stock error on race conditions.' }
     ],
+    tags: ['Cart', 'Stripe', 'Zustand', 'SSR', 'Checkout'],
     codeSnippet: `// Zustand Cart Store with Server Price Validation Pattern
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -237,6 +239,7 @@ export const useCartStore = create<CartStore>()(
       { level: 'Core Challenge', title: 'Case Study Modal with Focus Trap', prompt: 'Build an accessible modal dialog that traps focus, handles Escape key, and locks background scroll.' },
       { level: 'Advanced / Capstone', title: 'Dynamic GitHub Activity Graph', prompt: 'Fetch and visualize live GitHub contribution statistics and pinned repositories using the GitHub GraphQL API.' }
     ],
+    tags: ['Showcase', 'Animations', 'Static', 'WebP', 'Creative'],
     codeSnippet: `// Portfolio Project Showcase Grid with Case Study Modal
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -342,6 +345,7 @@ export function PortfolioGallery({ projects }: { projects: Project[] }) {
       { level: 'Core Challenge', title: 'Enterprise ROI Calculator', prompt: 'Create an interactive calculator where users slide team size and compute estimated annual cost savings.' },
       { level: 'Advanced / Capstone', title: 'CRM Webhook Form Handler', prompt: 'Build an Express/Next.js API route that validates corporate email domains (blocking @gmail/@yahoo) and pushes leads to a mock CRM.' }
     ],
+    tags: ['B2B', 'Lead-Gen', 'Forms', 'Multi-Step', 'Enterprise'],
     codeSnippet: `// Corporate Enterprise ROI Estimator & Consultation Request
 import React, { useState } from 'react';
 
@@ -439,6 +443,7 @@ export function EnterpriseCalculator() {
       { level: 'Core Challenge', title: 'Live Countdown Timer with Expiry State', prompt: 'Build a countdown timer hook that handles time zones accurately and renders an "Offer Expired" banner when zero is reached.' },
       { level: 'Advanced / Capstone', title: 'UTM Attribution Pipeline', prompt: 'Write a hook that reads ?utm_source, ?utm_campaign from URL, stores them in sessionStorage, and appends them to lead submissions.' }
     ],
+    tags: ['Conversion', 'Hero', 'A/B Test', 'Analytics', 'SaaS'],
     codeSnippet: `// High-Converting Pricing Tier Switcher with Annual Discount
 import React, { useState } from 'react';
 
@@ -545,6 +550,7 @@ export function PricingSwitcher() {
       { level: 'Core Challenge', title: 'Scroll-Spy Table of Contents', prompt: 'Use IntersectionObserver to track visible H2 and H3 elements and highlight the corresponding link in the TOC.' },
       { level: 'Advanced / Capstone', title: 'Client-Side Pagefind Search Indexer', prompt: 'Implement an in-memory search bar that indexes markdown headers and excerpts, returning matching snippets with highlight tags.' }
     ],
+    tags: ['Documentation', 'Wiki', 'Search', 'Algolia', 'Hierarchy'],
     codeSnippet: `// Reusable Interactive Wiki Callout / Admonition Component
 import React, { useState } from 'react';
 
@@ -621,6 +627,7 @@ export function WikiCallout({ type, title, children }: CalloutProps) {
       { level: 'Core Challenge', title: 'Time-Range Telemetry Switcher', prompt: 'Create a live metric chart that queries and renders aggregated data across 24h, 7d, and 30d timeframes.' },
       { level: 'Advanced / Capstone', title: 'Token Bucket Rate Limiter Simulation', prompt: 'Implement a client/server simulation of the Token Bucket algorithm displaying allowed vs 429 Too Many Requests.' }
     ],
+    tags: ['Dashboard', 'Analytics', 'Charts', 'Tenant', 'Metrics'],
     codeSnippet: `// API Key Lifecycle Manager with Safe One-Time Secret Disclosure
 import React, { useState } from 'react';
 
@@ -758,6 +765,7 @@ export function ApiKeyManager() {
       { level: 'Core Challenge', title: 'Live Comment Thread Adder', prompt: 'Create an expandable comment drawer that appends new user comments to the active post without reloading the feed.' },
       { level: 'Advanced / Capstone', title: 'Cursor-Based Pagination Hook', prompt: 'Implement a useInfiniteScroll hook that requests the next page based on next_cursor when the bottom sentinel intersects.' }
     ],
+    tags: ['Feed', 'Optimistic-UI', 'Infinite-Scroll', 'Realtime', 'Social'],
     codeSnippet: `// Optimistic Like & Repost Feed Item Pattern
 import React, { useState } from 'react';
 
@@ -869,6 +877,7 @@ export function SocialFeedItem({ initialPost }: { initialPost: Post }) {
       { level: 'Core Challenge', title: 'Inactivity Auto-Logout Modal', prompt: 'Build a hook that tracks user clicks and mouse moves, popping up a 60-second warning modal before logging the user out.' },
       { level: 'Advanced / Capstone', title: 'Presigned Document Download Vault', prompt: 'Implement a simulated download center that generates a secure, 30-second expiring download token for confidential PDFs.' }
     ],
+    tags: ['RBAC', 'Auth', 'Permissions', 'Audit-Log', 'Enterprise'],
     codeSnippet: `// Role-Gated Portal Gateway with Persona Switcher
 import React, { createContext, useContext, useState } from 'react';
 
@@ -976,6 +985,7 @@ export function PortalGate({ children }: { children: React.ReactNode }) {
       { level: 'Core Challenge', title: 'Sprint Progress Bar Engine', prompt: 'Calculate the dynamic percentage of completed story points and update the sprint velocity banner in real time.' },
       { level: 'Advanced / Capstone', title: 'Accessible Drag-and-Drop Kanban', prompt: 'Implement HTML5 drag-and-drop with dragover visual highlights and reorder support within columns.' }
     ],
+    tags: ['Kanban', 'Drag-and-Drop', 'Realtime', 'Tasks', 'Collaboration'],
     codeSnippet: `// Normalized Kanban Board State Transition Engine
 import React, { useState } from 'react';
 
@@ -1103,6 +1113,7 @@ export function KanbanBoard() {
       { level: 'Core Challenge', title: 'Self-Grading Quiz Engine', prompt: 'Build a multi-question interactive quiz that disables submitted answers, calculates score, and explains mistakes.' },
       { level: 'Advanced / Capstone', title: 'Dynamic Certificate Modal Generator', prompt: 'Render a printable SVG certificate featuring the student name, course title, and unique verification hash.' }
     ],
+    tags: ['LMS', 'Video', 'Quizzes', 'Progress', 'Interactive'],
     codeSnippet: `// Interactive Quiz Evaluation Engine with Explanations
 import React, { useState } from 'react';
 

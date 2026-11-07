@@ -44,4 +44,5 @@ export interface TeachingMetadata {
     prompt: string;
   }[];
   codeSnippet: string;
+  tags: string[];
 }

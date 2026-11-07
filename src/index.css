@@ -1,16 +1,151 @@
 @import "tailwindcss";
 
+:root,
+[data-theme="elegant-dark"] {
+  --bg-canvas: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-elevated: #1e293b;
+  --bg-subtle: #090d16;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #1e293b;
+  --border-strong: #334155;
+  --accent-primary: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-soft: rgba(99, 102, 241, 0.16);
+  --accent-text: #a5b4fc;
+  --accent-on-primary: #ffffff;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --radius-card: 1.25rem;
+  --radius-button: 0.75rem;
+  --radius-input: 0.75rem;
+}
+
+/* 1. Editorial & Refined (Serif fonts, generous whitespace, clean light background) */
+[data-theme="editorial-refined"] {
+  --bg-canvas: #faf9f6;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f4f2ed;
+  --bg-subtle: #f3f1ec;
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
+  --border-color: #e4e2dd;
+  --border-strong: #d4d0c8;
+  --accent-primary: #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-soft: rgba(29, 78, 216, 0.08);
+  --accent-text: #1d4ed8;
+  --accent-on-primary: #ffffff;
+  --font-body: 'Source Serif 4', Georgia, Cambria, serif;
+  --font-display: 'Playfair Display', Georgia, Cambria, serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --radius-card: 0.5rem;
+  --radius-button: 0.375rem;
+  --radius-input: 0.375rem;
+}
+
+/* 2. Technical & Systematic (Monospace fonts, high-density, visible grid borders) */
+[data-theme="technical-systematic"] {
+  --bg-canvas: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-subtle: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --border-strong: #94a3b8;
+  --accent-primary: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-soft: rgba(2, 132, 199, 0.1);
+  --accent-text: #0369a1;
+  --accent-on-primary: #ffffff;
+  --font-body: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --radius-card: 0.25rem;
+  --radius-button: 0.25rem;
+  --radius-input: 0.25rem;
+}
+
+/* 3. Warm & Approachable (Pastel cards, rounded pill buttons, soft corners) */
+[data-theme="warm-approachable"] {
+  --bg-canvas: #fffbf5;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #fef3c7;
+  --bg-subtle: #fdf4e7;
+  --text-primary: #292524;
+  --text-secondary: #44403c;
+  --text-muted: #78716c;
+  --border-color: #f3e5d0;
+  --border-strong: #e7d0b0;
+  --accent-primary: #ea580c;
+  --accent-hover: #c2410c;
+  --accent-soft: rgba(234, 88, 12, 0.12);
+  --accent-text: #c2410c;
+  --accent-on-primary: #ffffff;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --radius-card: 1.5rem;
+  --radius-button: 9999px;
+  --radius-input: 9999px;
+}
+
+/* 5. Vibrant Palette (High-energy, bold color schemes) */
+[data-theme="vibrant-palette"] {
+  --bg-canvas: #f5f3ff;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ede9fe;
+  --bg-subtle: #ede9fe;
+  --text-primary: #1e1b4b;
+  --text-secondary: #312e81;
+  --text-muted: #5b21b6;
+  --border-color: #ddd6fe;
+  --border-strong: #c4b5fd;
+  --accent-primary: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-soft: rgba(124, 58, 237, 0.14);
+  --accent-text: #6d28d9;
+  --accent-on-primary: #ffffff;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --radius-card: 1.25rem;
+  --radius-button: 0.875rem;
+  --radius-input: 0.875rem;
+}
+
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
   code, pre, kbd {
-    font-family: 'Fira Code', ui-monospace, monospace;
+    font-family: var(--font-mono);
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-display);
+  }
+}
+
+/* KBT Integration Guide: Tailwind CSS Squircle Mask Utility */
+@layer utilities {
+  .mask-squircle {
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="black" d="M 0,50 C 0,4 4,0 50,0 C 96,0 100,4 100,50 C 100,96 96,100 50,100 C 4,100 0,96 0,50 Z"/></svg>');
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="black" d="M 0,50 C 0,4 4,0 50,0 C 96,0 100,4 100,50 C 100,96 96,100 50,100 C 4,100 0,96 0,50 Z"/></svg>');
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
   }
 }
 
@@ -21,14 +156,71 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.4);
+  background: var(--border-strong);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.7);
+  background: var(--text-muted);
 }
+
+/* Print-Specific Layout & Code Optimization */
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  /* Hide sidebar, top control bar, breadcrumb trail, and modals */
+  aside,
+  header,
+  nav[aria-label="Breadcrumb"],
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Reset viewport-locked flex containers so multi-page content prints cleanly */
+  html,
+  body,
+  #root,
+  #root > div,
+  #root > div > div {
+    height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    display: block !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  /* Optimize code snippets for page width and readability */
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: visible !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 12pt !important;
+    font-size: 9pt !important;
+    line-height: 1.45 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  code {
+    color: #0f172a !important;
+    background: transparent !important;
+  }
+
+  h1, h2, h3, h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+    color: #0f172a !important;
+  }
+}
+
