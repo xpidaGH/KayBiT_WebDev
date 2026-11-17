@@ -68,17 +68,29 @@ jobs:
       - name: Sync Capacitor iOS, Increment Build Number & Archive .ipa
         run: |
           npx cap sync ios
+          cd ios/App
           agvtool new-version -all ${{ github.run_number }}
-          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -archivePath build/App.xcarchive archive
-          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportOptionsPlist ios/App/exportOptions.plist -exportPath build/ios-out
+          xcodebuild -project App.xcodeproj \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath ../../build/App.xcarchive \
+            archive
+          xcodebuild -exportArchive \
+            -archivePath ../../build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath ../../build/ios-out
 
       - name: Upload iOS .ipa to TestFlight
-        if: secrets.APPSTORE_KEY_ID != ''
         env:
           APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
+          if [ -z "$APPSTORE_KEY_ID" ]; then
+            echo "APPSTORE_KEY_ID not set; skipping TestFlight upload."
+            exit 0
+          fi
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APPSTORE_PRIVATE_KEY" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8
           xcrun altool --upload-app --type ios --file build/ios-out/*.ipa --apiKey "$APPSTORE_KEY_ID" --apiIssuer "$APPSTORE_ISSUER_ID"
@@ -165,8 +177,10 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Build Web Bundle & Compile Android APK / AAB
@@ -176,7 +190,7 @@ jobs:
           npx cap sync android
           cd android && ./gradlew bundleRelease assembleRelease -PversionCode=${{ github.run_number }}
 
-      - name: Decode Base64 Keystore in Runner Memory & Sign Android AAB
+      - name: Decode Base64 Keystore & Sign Android AAB
         uses: r0adkll/sign-android-release@v1
         id: sign_aab
         with:
@@ -186,8 +200,20 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+      - name: Decode Base64 Keystore & Sign Android APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_apk
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
       - name: Publish Signed .aab to Google Play Internal Testing Track
-        if: secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
@@ -210,7 +236,7 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.AppImage
             android/app/build/outputs/apk/release/*.apk
 
-  publish-release:
+    publish-release:
     name: Automated Changelog, GitHub Release & Alerts
     needs: [ build-apple, build-windows, build-ubuntu ]
     if: always()
@@ -219,6 +245,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Full History for Changelog
+        if: needs.build-apple.result == 'success' && needs.build-windows.result == 'success' && needs.build-ubuntu.result == 'success'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -230,29 +257,33 @@ jobs:
           path: release-assets
 
       - name: Generate Automated Changelog from Git Commits
+        if: needs.build-apple.result == 'success' && needs.build-windows.result == 'success' && needs.build-ubuntu.result == 'success'
         id: changelog
         run: |
+          RELEASE_TAG="${{ github.ref_type == 'tag' && github.ref_name || format('v1.0.{0}', github.run_number) }}"
+          echo "RELEASE_TAG=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
           LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -z "$LAST_TAG" ]; then
-            NOTES=$(git log -n 20 --pretty=format:"- %s (%h)" )
+            NOTES=$(git log -n 20 --pretty=format:"- %s (%h)")
           else
             NOTES=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)")
           fi
           {
             echo "BODY<<EOF"
-            echo "## KBT Multiplatform Release v1.0.${{ github.run_number }}"
+            echo "## KBT Multiplatform Release $RELEASE_TAG"
             echo ""
             echo "### Changes"
             echo "$NOTES"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Publish Desktop Installers (.msi, .dmg, .AppImage, .deb, .apk) to GitHub Releases
+      - name: Publish Installers (.msi, .exe, .dmg, .AppImage, .deb, .apk) to GitHub Releases
         if: needs.build-apple.result == 'success' && needs.build-windows.result == 'success' && needs.build-ubuntu.result == 'success'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: KBT Studio v1.0.${{ github.run_number }}
+          tag_name: ${{ steps.changelog.outputs.RELEASE_TAG }}
+          name: KBT Studio ${{ steps.changelog.outputs.RELEASE_TAG }}
           body: ${{ steps.changelog.outputs.BODY }}
           files: |
             release-assets/**/*.msi
@@ -263,31 +294,36 @@ jobs:
             release-assets/**/*.apk
 
       - name: Notify Team via Slack
-        if: secrets.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.27.0
         with:
           payload: |
             {
               "text": "KBT Build #${{ github.run_number }} finished — Apple: ${{ needs.build-apple.result }}, Windows: ${{ needs.build-windows.result }}, Ubuntu/Android: ${{ needs.build-ubuntu.result }}"
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Notify Team via Discord
-        if: secrets.DISCORD_WEBHOOK_URL != ''
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        if: env.DISCORD_WEBHOOK_URL != ''
         run: |
           curl -H "Content-Type: application/json" \
             -d '{"content": "KBT Build #${{ github.run_number }} — Apple: ${{ needs.build-apple.result }}, Windows: ${{ needs.build-windows.result }}, Ubuntu: ${{ needs.build-ubuntu.result }}"}' \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            "$DISCORD_WEBHOOK_URL"
 
       - name: Notify Team via Email
-        if: secrets.SMTP_USERNAME != ''
+        env:
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        if: env.SMTP_USERNAME != ''
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
+          username: ${{ env.SMTP_USERNAME }}
+          password: ${{ env.SMTP_PASSWORD }}
           subject: "KBT Multiplatform Build #${{ github.run_number }} Status"
           to: team@kbt-academy.example
           from: "KBT CI Bot <ci@kbt-academy.example>"
